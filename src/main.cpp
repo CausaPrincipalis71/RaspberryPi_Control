@@ -24,8 +24,16 @@ void loop() {
       //Serial.println(Reciever.results.value, HEX);
       if (IRvalue == 0xC) // Включение реле
       {
-          relay.toggle_Status();
-          delay(1000);
+          Reciever.resume();
+          while (!Reciever.available())
+          {;}
+          Reciever.decode();
+          IRvalue = Reciever.results.value & 0xFF;
+          if(IRvalue == 0xC)
+          {
+            relay.toggle_Status();
+            delay(1000);
+          }
       }
       /*
       ОБОЗНАЧЕНИЕ КОМАНД
@@ -34,6 +42,10 @@ void loop() {
       3 - МЫШЬ ВПРАВО
       4 - МЫШЬ ВЛЕВО
       5 - ЛКМ
+      6 - СТРЕЛКА ВВЕРХ
+      7 - СТРЕЛКА ВНИЗ
+      8 - УМЕНЬШИТЬ СКОРОСТЬ МЫШИ
+      9 - УВЕЛИЧИТЬ СКОРОСТЬ МЫШИ
       */
       else if(IRvalue == 0x20)
         Serial.print(1);
@@ -47,6 +59,22 @@ void loop() {
       {
         Serial.print(5);
         delay(200);
+      }
+      else if(IRvalue == 0x29)
+      {
+        Serial.print(6);
+      }
+      else if(IRvalue == 0x2B)
+      {
+        Serial.print(7);
+      }
+      else if(IRvalue == 0xB)
+      {
+        Serial.print(8);
+      }
+      else if(IRvalue == 0xA)
+      {
+        Serial.print(9);
       }
       
       // ТЕЛЕВИЗОР
